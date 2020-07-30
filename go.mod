@@ -1,4 +1,4 @@
-module github.com/opentracing-contrib/goredis
+module github.com/alexvassel/goredis
 
 go 1.12
 
