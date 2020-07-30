@@ -7,7 +7,7 @@ import (
 
 	"github.com/go-redis/redis"
 
-	apmgoredis "github.com/opentracing-contrib/goredis"
+	apmgoredis "github.com/alexvassel/goredis"
 )
 
 var redisClient *redis.Client // initialized at program startup
@@ -21,9 +21,3 @@ func handleRequest(w http.ResponseWriter, req *http.Request) {
 	...
 }
 ```
-
-Example: [goredis-example](./examples)
-
-![](./examples/imgs/img1.jpg)
-
-![](./examples/imgs/img2.jpg)
