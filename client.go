@@ -3,11 +3,46 @@ package apm
 import (
 	"context"
 	"fmt"
-	"github.com/go-redis/redis"
+	"github.com/go-redis/redis/v7"
 	"github.com/opentracing/opentracing-go"
 	"github.com/opentracing/opentracing-go/ext"
 	"strings"
 )
+
+type opentracingHook struct{}
+
+var _ redis.Hook = opentracingHook{}
+
+func (opentracingHook) BeforeProcess(ctx context.Context, cmd redis.Cmder) (context.Context, error) {
+	spanName := strings.ToUpper(cmd.Name())
+	span, _ := opentracing.StartSpanFromContext(ctx, spanName)
+	ext.DBType.Set(span, "redis")
+	ext.DBStatement.Set(span, fmt.Sprintf("%v", cmd.Args()))
+	ctx = opentracing.ContextWithSpan(ctx, span)
+
+	return ctx, nil
+}
+
+func (opentracingHook) AfterProcess(ctx context.Context, cmd redis.Cmder) error {
+	span := opentracing.SpanFromContext(ctx)
+	span.Finish()
+	return nil
+}
+
+func (opentracingHook) BeforeProcessPipeline(ctx context.Context, cmds []redis.Cmder) (context.Context, error) {
+	span, ctx := opentracing.StartSpanFromContext(ctx, "(pipeline)")
+	dbMethod := formatCommandsAsDbMethods(cmds)
+	ext.DBType.Set(span, "redis")
+	ext.DBStatement.Set(span, fmt.Sprintf("%v", dbMethod))
+	ctx = opentracing.ContextWithSpan(ctx, span)
+	return ctx, nil
+}
+
+func (opentracingHook) AfterProcessPipeline(ctx context.Context, cmds []redis.Cmder) error {
+	span := opentracing.SpanFromContext(ctx)
+	span.Finish()
+	return nil
+}
 
 // Client is the interface returned by Wrap.
 //
@@ -55,8 +90,7 @@ type contextClient struct {
 func (c contextClient) WithContext(ctx context.Context) Client {
 	c.Client = c.Client.WithContext(ctx)
 
-	c.WrapProcess(process(ctx))
-	c.WrapProcessPipeline(processPipeline(ctx))
+	c.AddHook(opentracingHook{})
 
 	return c
 }
@@ -84,8 +118,7 @@ func (c contextClusterClient) RingClient() *redis.Ring {
 func (c contextClusterClient) WithContext(ctx context.Context) Client {
 	c.ClusterClient = c.ClusterClient.WithContext(ctx)
 
-	c.WrapProcess(process(ctx))
-	c.WrapProcessPipeline(processPipeline(ctx))
+	c.AddHook(opentracingHook{})
 
 	return c
 }
@@ -106,48 +139,16 @@ func (c contextRingClient) RingClient() *redis.Ring {
 func (c contextRingClient) WithContext(ctx context.Context) Client {
 	c.Ring = c.Ring.WithContext(ctx)
 
-	c.WrapProcess(process(ctx))
-	c.WrapProcessPipeline(processPipeline(ctx))
+	c.AddHook(opentracingHook{})
 
 	return c
 }
 
-func process(ctx context.Context) func(oldProcess func(cmd redis.Cmder) error) func(cmd redis.Cmder) error {
-	return func(oldProcess func(cmd redis.Cmder) error) func(cmd redis.Cmder) error {
-		return func(cmd redis.Cmder) error {
-			spanName := strings.ToUpper(cmd.Name())
-			span, _ := opentracing.StartSpanFromContext(ctx, spanName)
-			ext.DBType.Set(span, "redis")
-			ext.DBStatement.Set(span, fmt.Sprintf("%v", cmd.Args()))
-			defer span.Finish()
-
-			return oldProcess(cmd)
-		}
+func formatCommandsAsDbMethods(cmds []redis.Cmder) string {
+	cmdsAsDbMethods := make([]string, len(cmds))
+	for i, cmd := range cmds {
+		dbMethod := cmd.Name()
+		cmdsAsDbMethods[i] = dbMethod
 	}
-}
-
-func processPipeline(ctx context.Context) func(oldProcess func(cmds []redis.Cmder) error) func(cmds []redis.Cmder) error {
-	return func(oldProcess func(cmds []redis.Cmder) error) func(cmds []redis.Cmder) error {
-		return func(cmds []redis.Cmder) error {
-			pipelineSpan, ctx := opentracing.StartSpanFromContext(ctx, "(pipeline)")
-
-			ext.DBType.Set(pipelineSpan, "redis")
-
-			for i := len(cmds); i > 0; i-- {
-				cmdName := strings.ToUpper(cmds[i-1].Name())
-				if cmdName == "" {
-					cmdName = "(empty command)"
-				}
-
-				span, _ := opentracing.StartSpanFromContext(ctx, cmdName)
-				ext.DBType.Set(span, "redis")
-				ext.DBStatement.Set(span, fmt.Sprintf("%v", cmds[i-1].Args()))
-				defer span.Finish()
-			}
-
-			defer pipelineSpan.Finish()
-
-			return oldProcess(cmds)
-		}
-	}
+	return strings.Join(cmdsAsDbMethods, " -> ")
 }

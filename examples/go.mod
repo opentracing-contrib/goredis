@@ -12,7 +12,7 @@ require (
 	github.com/labstack/echo/v4 v4.1.8
 	github.com/opentracing-contrib/echo v0.0.0-00010101000000-000000000000
 	github.com/opentracing-contrib/goredis v0.0.0-00010101000000-000000000000
-	github.com/opentracing/opentracing-go v1.1.0
+	github.com/opentracing/opentracing-go v1.2.0
 	github.com/pkg/errors v0.8.1 // indirect
 	github.com/uber-go/atomic v1.4.0 // indirect
 	github.com/uber/jaeger-client-go v2.16.0+incompatible
