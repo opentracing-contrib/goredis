@@ -5,9 +5,9 @@ a middleware for goredis to use opentracing
 import (
 	"net/http"
 
-	"github.com/go-redis/redis"
+	"github.com/go-redis/redis/v7"
 
-	apmgoredis "github.com/opentracing-contrib/goredis"
+	apmgoredis "github.com/severgroup-tt/goredis"
 )
 
 var redisClient *redis.Client // initialized at program startup
