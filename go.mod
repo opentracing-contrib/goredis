@@ -2,7 +2,7 @@ module github.com/opentracing-contrib/goredis
 
 go 1.22.0
 
-toolchain go1.23.5
+toolchain go1.23.6
 
 require (
 	github.com/go-redis/redis v6.15.9+incompatible
