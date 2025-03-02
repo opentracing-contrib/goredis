@@ -6,7 +6,7 @@ toolchain go1.24.0
 
 replace github.com/opentracing-contrib/goredis => ../
 
-replace github.com/opentracing-contrib/echo => github.com/opentracing-lib/echo v0.0.0-20250122030754-f79ab662ab1e
+replace github.com/opentracing-contrib/echo => github.com/opentracing-lib/echo v0.0.0-20250301210356-6e482e1eee5b
 
 require (
 	github.com/go-redis/redis v6.15.9+incompatible
