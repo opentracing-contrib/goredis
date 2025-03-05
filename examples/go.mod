@@ -2,7 +2,7 @@ module github.com/opentracing-contrib/goredis/examples
 
 go 1.22.11
 
-toolchain go1.24.0
+toolchain go1.24.1
 
 replace github.com/opentracing-contrib/goredis => ../
 
