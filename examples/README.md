@@ -1,5 +1,7 @@
+# Examples
 
 1. start jaeger
+
 ```shell script
 docker run -d --name jaeger \
   -e COLLECTOR_ZIPKIN_HTTP_PORT=9411 \
@@ -14,25 +16,28 @@ docker run -d --name jaeger \
 
 ```
 
-2. start redis
+1. start redis
 
 ```shell script
 docker run -d --name redis -p 6379:6379 redis
 ```
 
-3. set env 
+1. set env
+
 ```shell script
 export JAEGER_AGENT_HOST=localhost
 export JAEGER_AGENT_PORT=6831
 export JAEGER_ENABLED=true
 ```
 
-4. run example
+1. run example
+
 ```shell script
 go run server.go
 ```
 
-5. call the server
+1. call the server
+
 ```shell script
 curl http://localhost:1323/hello
 ```
