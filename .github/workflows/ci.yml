@@ -1,0 +1,40 @@
+name: CI
+
+on:
+  push:
+    branches:
+      - master
+    tags:
+      - "v[0-9]+.[0-9]+.[0-9]+*"
+  pull_request:
+    branches:
+      - master
+
+jobs:
+  build:
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Setup Golang Environment
+        uses: actions/setup-go@v5
+        with:
+          go-version: stable
+
+      - name: Build
+        run: go build -v ./...
+
+  draft-release:
+    runs-on: ubuntu-24.04
+    if: github.event_name != 'pull_request'
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Create/Update Draft Release
+        uses: lucacome/draft-release@v1.2.1
+        with:
+          minor-label: "enhancement"
+          major-label: "change"
+          collapse-after: 20
