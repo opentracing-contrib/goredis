@@ -8,7 +8,7 @@ require (
 	github.com/go-redis/redis v6.15.9+incompatible
 	github.com/labstack/echo/v4 v4.13.3
 	github.com/opentracing-contrib/echo v0.0.0-20250122030754-f79ab662ab1e
-	github.com/opentracing-contrib/goredis v0.0.0-20250217151219-7194f00a73c6
+	github.com/opentracing-contrib/goredis v0.0.0-20250218160141-b5570e4eea5d
 	github.com/opentracing/opentracing-go v1.2.0
 	github.com/uber/jaeger-client-go v2.30.0+incompatible
 )
