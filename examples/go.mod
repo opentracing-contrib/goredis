@@ -1,12 +1,8 @@
 module github.com/opentracing-contrib/goredis/examples
 
-go 1.22.11
-
-toolchain go1.24.0
+go 1.22.12
 
 replace github.com/opentracing-contrib/goredis => ../
-
-replace github.com/opentracing-contrib/echo => github.com/opentracing-lib/echo v0.0.0-20250122030754-f79ab662ab1e
 
 require (
 	github.com/go-redis/redis v6.15.9+incompatible
