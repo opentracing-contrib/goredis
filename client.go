@@ -3,15 +3,14 @@ package apm
 import (
 	"context"
 	"fmt"
+	"strings"
+
 	"github.com/go-redis/redis"
 	"github.com/opentracing/opentracing-go"
 	"github.com/opentracing/opentracing-go/ext"
-	"strings"
 )
 
-// Client is the interface returned by Wrap.
-//
-// Client implements redis.UniversalClient
+// Client implements redis.UniversalClient.
 type Client interface {
 	redis.UniversalClient
 
@@ -35,17 +34,16 @@ type Client interface {
 // using the client's associated context.
 // A context-specific client may be obtained by using Client.WithContext.
 func Wrap(client redis.UniversalClient) Client {
-	switch client.(type) {
+	switch client := client.(type) {
 	case *redis.Client:
-		return contextClient{Client: client.(*redis.Client)}
+		return contextClient{Client: client}
 	case *redis.ClusterClient:
-		return contextClusterClient{ClusterClient: client.(*redis.ClusterClient)}
+		return contextClusterClient{ClusterClient: client}
 	case *redis.Ring:
-		return contextRingClient{Ring: client.(*redis.Ring)}
+		return contextRingClient{Ring: client}
 	}
 
 	return client.(Client)
-
 }
 
 type contextClient struct {
@@ -95,7 +93,6 @@ type contextRingClient struct {
 }
 
 func (c contextRingClient) Cluster() *redis.ClusterClient {
-
 	return nil
 }
 
