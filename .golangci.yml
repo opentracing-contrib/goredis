@@ -80,7 +80,7 @@ linters:
     - usetesting
     - wastedassign
     - whitespace
-    # - wrapcheck
+    - wrapcheck
   disable-all: true
 issues:
   max-issues-per-linter: 0

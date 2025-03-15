@@ -41,9 +41,13 @@ func Wrap(client redis.UniversalClient) Client {
 		return contextClusterClient{ClusterClient: client}
 	case *redis.Ring:
 		return contextRingClient{Ring: client}
+	default:
+		if c, ok := client.(Client); ok {
+			return c
+		}
+		// Handle the case where client doesn't implement the Client interface
+		panic(fmt.Sprintf("unsupported redis client type: %T", client))
 	}
-
-	return client.(Client)
 }
 
 type contextClient struct {
@@ -126,8 +130,7 @@ func process(ctx context.Context) func(oldProcess func(cmd redis.Cmder) error) f
 func processPipeline(ctx context.Context) func(oldProcess func(cmds []redis.Cmder) error) func(cmds []redis.Cmder) error {
 	return func(oldProcess func(cmds []redis.Cmder) error) func(cmds []redis.Cmder) error {
 		return func(cmds []redis.Cmder) error {
-			pipelineSpan, ctx := opentracing.StartSpanFromContext(ctx, "(pipeline)")
-
+			pipelineSpan, pipelineCtx := opentracing.StartSpanFromContext(ctx, "(pipeline)")
 			ext.DBType.Set(pipelineSpan, "redis")
 
 			for i := len(cmds); i > 0; i-- {
@@ -136,7 +139,7 @@ func processPipeline(ctx context.Context) func(oldProcess func(cmds []redis.Cmde
 					cmdName = "(empty command)"
 				}
 
-				span, _ := opentracing.StartSpanFromContext(ctx, cmdName)
+				span, _ := opentracing.StartSpanFromContext(pipelineCtx, cmdName)
 				ext.DBType.Set(span, "redis")
 				ext.DBStatement.Set(span, fmt.Sprintf("%v", cmds[i-1].Args()))
 				defer span.Finish()
