@@ -2,10 +2,10 @@ package main
 
 import (
 	"github.com/go-redis/redis"
-	"github.com/labstack/echo/v4"
+	"github.com/labstack/echo/v5"
 	apmecho "github.com/opentracing-contrib/echo"
-	"github.com/opentracing-contrib/goredis/examples/tracer"
 	apmgoredis "github.com/opentracing-contrib/goredis"
+	"github.com/opentracing-contrib/goredis/examples/tracer"
 	"github.com/opentracing/opentracing-go"
 	"net/http"
 	"os"
