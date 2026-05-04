@@ -6,7 +6,7 @@ replace github.com/opentracing-contrib/goredis => ../
 
 require (
 	github.com/go-redis/redis v6.15.9+incompatible
-	github.com/labstack/echo/v5 v5.1.0
+	github.com/labstack/echo/v5 v5.1.1
 	github.com/opentracing-contrib/echo v0.1.0
 	github.com/opentracing-contrib/goredis v0.0.0
 	github.com/opentracing/opentracing-go v1.2.0
