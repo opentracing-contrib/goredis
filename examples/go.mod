@@ -6,7 +6,7 @@ replace github.com/opentracing-contrib/goredis => ../
 
 require (
 	github.com/go-redis/redis v6.15.9+incompatible
-	github.com/labstack/echo/v5 v5.1.0
+	github.com/labstack/echo/v5 v5.3.1
 	github.com/opentracing-contrib/echo v0.1.0
 	github.com/opentracing-contrib/goredis v0.0.0
 	github.com/opentracing/opentracing-go v1.2.0
@@ -26,8 +26,8 @@ require (
 	github.com/valyala/bytebufferpool v1.0.0 // indirect
 	github.com/valyala/fasttemplate v1.2.2 // indirect
 	go.uber.org/atomic v1.11.0 // indirect
-	golang.org/x/crypto v0.47.0 // indirect
-	golang.org/x/net v0.49.0 // indirect
-	golang.org/x/sys v0.40.0 // indirect
-	golang.org/x/text v0.33.0 // indirect
+	golang.org/x/crypto v0.54.0 // indirect
+	golang.org/x/net v0.57.0 // indirect
+	golang.org/x/sys v0.47.0 // indirect
+	golang.org/x/text v0.40.0 // indirect
 )
